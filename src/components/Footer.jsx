@@ -56,7 +56,7 @@ const Footer = () => {
 
         {/* Mentions légales */}
         <div className="text-center text-sm text-gray-400">
-          <p>© 2025 SaulDesign. All rights reserved.</p>
+          <p>© 2025 AbdalWahab. All rights reserved.</p>
           <p>
             <a href="#terms" className="hover:text-primary">
               Terms of Service

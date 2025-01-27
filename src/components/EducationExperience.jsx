@@ -3,22 +3,23 @@ import { motion } from "framer-motion";
 
 const experience = [
   {
-    year: "2021 - Présent",
-    title: "Développeur Web Full Stack",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    year: "2024 - Présent",
+    title: "Développeur Web Freelance",
+    description: "Création de sites web réactifs, intégration de solutions de paiement, et gestion de projets Laravel.",
     side: "left"
   },
   {
-    year: "2019 - 2021",
-    title: "Développeur Frontend",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    year: "2024",
+    title: "Stagiaire Développeur Frontend",
+    description: "Participation à la conception et au développement de solutions web pour une entreprise locale (planetkoncept).",
     side: "right"
   },
   {
-    year: "2017 - 2019",
-    title: "Stagiaire Développeur",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    side: "left"
+      year: "2023",
+     title: "Stagiaire Développeur",
+      institution: "Planet Koncept",
+      description: "Conception et réalisation d'un système de gestion pour une agence de voyage.",
+      side: "left"
   }
 ];
 

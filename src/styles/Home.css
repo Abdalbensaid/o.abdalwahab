@@ -49,3 +49,28 @@
     width: 40%;
     max-width: 500px;
   }
+
+  footer{
+    padding: 4rem 2rem;
+    background-color: #1d242d;
+    color: #fff;
+    text-align: center;
+  }
+  .container-footer{
+    display: flex;
+    justify-content: space-between;
+  }
+
+  footer a{
+    color: #fff;
+  }
+  .nav a{
+    display: flex;
+    margin-left: 20px;
+  }
+
+  .facebook{
+background-color: blue;
+border: blue;
+height: 100%;
+  }
