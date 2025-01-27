@@ -37,7 +37,7 @@ const Header = () => {
   return (
     <header className={`header ${isScrolled ? "scrolled" : ""}`}>
       <div className="header-content">
-        <h1> <div className="abdal">ABDAL</div> <div className="bsaid">ben SAID</div> </h1>
+        <h1> <div className="abdal">O. ABDAL</div> <div className="bsaid">WAHAB</div> </h1>
         <button className="menu-toggle" onClick={toggleMenu}>
           <span className={`menu-icon ${isMenuOpen ? "open" : ""}`}></span>
         </button>
