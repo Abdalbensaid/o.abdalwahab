@@ -15,7 +15,7 @@ import './styles/header.css';
 import './styles/About.css';
 // import './styles/AboutSection.css';
 import './styles/Contact.css';
-import './styles/Footer.css';
+// import './styles/Footer.css';
 import './styles/Works.css';
 
 
