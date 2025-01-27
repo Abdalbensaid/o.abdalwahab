@@ -1,0 +1,100 @@
+
+.about {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4rem 2rem;
+    background-color: #161b22; /* Couleur sombre */
+    color: #fff;
+  }
+  
+  .about-content {
+    max-width: 50%;
+  }
+  
+  .about-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #00d1b2; /* Couleur accent */
+  }
+  
+  .about-content h2 span {
+    color: #fff; /* Contraste avec le mot "About" */
+  }
+  
+  .about-content p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  
+  .about-content .btn-primary {
+    padding: 0.8rem 1.5rem;
+    background-color: #00d1b2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .about-illustration {
+    width: 40%;
+    max-width: 500px;
+  }
+
+  .skills {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .skill-item {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .skill-item:hover {
+    transform: translateY(-5px);
+    background-color: #ff6347;
+  }
+  /* Conteneur rond */
+.relative {
+  position: relative;
+}
+
+.rounded-full {
+  border-radius: 50%;
+  position:relative ;
+}
+
+.bg-primary {
+  background-color: transparent; /* Couleur du cercle */
+}
+
+.overflow-visible {
+  overflow: visible;
+}
+
+/* Image avec débordement */
+.absolute {
+  position:-ms-page;
+  height: 400px;
+}
+
+.object-cover {
+  object-fit: cover;
+}
+
+.border-4 {
+  border-width: 4px;
+}
+
+.shadow-lg {
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+}

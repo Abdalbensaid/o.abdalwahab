@@ -1,0 +1,51 @@
+.home {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10rem;
+    background-color: #1d242d;
+    color: #fff; /* Texte blanc */
+    border-radius: 15px;
+  }
+  
+  /* .home-content {
+    max-width: 100%;
+  } */
+  
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .btn-primary {
+    padding: 0.8rem 1.5rem;
+    background-color: #00d1b2;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .btn-secondary {
+    padding: 0.8rem 1.5rem;
+    background-color: transparent;
+    border: 2px solid #00d1b2;
+    color: #00d1b2;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .home-illustration {
+    width: 40%;
+    max-width: 500px;
+  }
