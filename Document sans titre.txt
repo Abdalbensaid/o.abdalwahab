@@ -1,71 +1,171 @@
-﻿@extends('layouts.app')
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
+return new class extends Migration {
+    public function up() {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->text('content')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down() {
+        Schema::dropIfExists('posts');
+    }
+};
+
+return new class extends Migration {
+    public function up() {
+        Schema::create('polls', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->string('option_text', 200);
+            $table->timestamps();
+        });
+    }
+
+    public function down() {
+        Schema::dropIfExists('polls');
+    }
+};
+
+return new class extends Migration {
+    public function up() {
+        Schema::create('votes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('poll_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+
+    public function down() {
+        Schema::dropIfExists('votes');
+    }
+};
+
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model {
+    use HasFactory;
+    protected $fillable = ['user_id', 'content'];
+
+    public function polls() {
+        return $this->hasMany(Poll::class);
+    }
+}
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Poll extends Model {
+    use HasFactory;
+    protected $fillable = ['post_id', 'option_text'];
+
+    public function votes() {
+        return $this->hasMany(Vote::class);
+    }
+}
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Vote extends Model {
+    use HasFactory;
+    protected $fillable = ['user_id', 'poll_id'];
+
+    public function poll() {
+        return $this->belongsTo(Poll::class);
+    }
+}
+
+namespace App\Http\Controllers;
+
+use App\Models\Poll;
+use App\Models\Post;
+use App\Models\Vote;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class PollController extends Controller {
+    public function index() {
+        $posts = Post::with('polls.votes')->latest()->get();
+        return view('polls.index', compact('posts'));
+    }
+
+    public function vote(Request $request, Poll $poll) {
+        if (!Auth::check()) {
+            return redirect()->back()->with('error', 'Vous devez être connecté pour voter.');
+        }
+
+        $existingVote = Vote::where('user_id', Auth::id())->where('poll_id', $poll->id)->first();
+
+        if (!$existingVote) {
+            Vote::create([
+                'user_id' => Auth::id(),
+                'poll_id' => $poll->id
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Vote enregistré avec succès !');
+    }
+}
+
+@extends('layouts.app')
 
 @section('content')
-    <h1 class="mb-4">Sondages</h1>
-
-
-    <!-- Formulaire pour créer un post -->
-    <form action="{{ route('posts.store') }}" method="POST" class="mb-4">
-        @csrf
-        <div class="mb-3">
-            <textarea name="content" class="form-control" placeholder="Écrivez votre post ici..." required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Publier</button>
-    </form>
-
-
-    <!-- Liste des posts -->
-    @foreach ($posts as $post)
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <p class="card-text">{{ $post->content }}</p>
-
-
-                <!-- Formulaire pour ajouter un sondage -->
-                <form action="{{ route('polls.store') }}" method="POST" class="mb-3">
-                    @csrf
-                    <input type="hidden" name="post_id" value="{{ $post->id }}">
-                    <div class="mb-3">
-                        <input type="text" name="text" class="form-control" placeholder="Option de sondage" required>
-                    </div>
-                    <button type="submit" class="btn btn-secondary">Ajouter une option</button>
-                </form>
-
-
-                <!-- Liste des sondages -->
-                @php
-                    $totalVotes = $post->polls->sum(fn($poll) => $poll->votes->count());
-                @endphp
-
-
-                @foreach ($post->polls as $poll)
-                    @php
-                        $voteCount = $poll->votes->count();
-                        $percentage = $totalVotes > 0 ? ($voteCount / $totalVotes) * 100 : 0;
-                    @endphp
-
-
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span>{{ $poll->text }}</span>
-                            <span class="fw-bold">{{ round($percentage, 1) }}%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $percentage }}%;" 
-                                 aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-
-
-                    <form action="{{ route('votes.store') }}" method="POST" class="mt-2">
-                        @csrf
-                        <input type="hidden" name="post_id" value="{{ $post->id }}">
-                        <input type="hidden" name="option_id" value="{{ $poll->id }}">
-                        <button type="submit" class="btn btn-success btn-sm">Voter</button>
-                    </form>
+<div class="container">
+    @foreach($posts as $post)
+        <div class="poll-card">
+            <h3>{{ $post->content }}</h3>
+            <ul>
+                @foreach($post->polls as $poll)
+                    <li>
+                        <form action="{{ route('poll.vote', $poll->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="vote-button">{{ $poll->option_text }}</button>
+                        </form>
+                    </li>
                 @endforeach
-            </div>
+            </ul>
         </div>
     @endforeach
+</div>
 @endsection
+
+.poll-card {
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.poll-card:hover {
+    transform: scale(1.05);
+}
+
+.vote-button {
+    background: #4f46e5;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background 0.2s ease-in-out;
+}
+
+.vote-button:hover {
+    background: #4338ca;
+}
+
+
