@@ -169,3 +169,124 @@ class PollController extends Controller {
 }
 
 
+use Illuminate\Support\Facades\Storage;
+
+public function store(Request $request)
+{
+    $request->validate([
+        'content' => 'nullable|max:500',
+        'postRecord' => 'nullable|file|mimes:mp3,wav|max:2048', // Validation pour les fichiers audio
+        'polls' => 'required|array|min:2',
+        'polls.*.text' => 'required|string|max:200'
+    ]);
+
+    // Enregistrement du fichier audio
+    $postRecordPath = null;
+    if ($request->hasFile('postRecord')) {
+        $postRecordPath = $request->file('postRecord')->store('postRecords', 'public');
+    }
+
+    // Création du post
+    $post = Auth::user()->posts()->create([
+        'content' => $request->content,
+        'postRecord' => $postRecordPath,
+    ]);
+
+    // Création des options de sondage
+    foreach ($request->polls as $poll) {
+        $post->polls()->create($poll);
+    }
+
+    return redirect()->route('posts.index')->with('success', 'Post créé avec succès !');
+}
+
+
+
+<div class="max-w-2xl mx-auto p-4">
+    @foreach($posts as $post)
+        <div class="bg-white rounded-lg shadow-md mb-6 p-6 transition-all hover:shadow-lg">
+            <div class="flex items-center mb-4">
+                <img src="{{ $post->user->avatar }}" class="w-12 h-12 rounded-full mr-3">
+                <div>
+                    <h3 class="font-semibold text-lg">{{ $post->user->name }}</h3>
+                    <p class="text-gray-500 text-sm">{{ $post->created_at->diffForHumans() }}</p>
+                </div>
+            </div>
+
+            <!-- Affichage du contenu texte -->
+            @if($post->content)
+                <p class="mb-4 text-gray-700">{{ $post->content }}</p>
+            @endif
+
+            <!-- Affichage de l'enregistrement vocal -->
+            @if($post->postRecord)
+                <div class="mb-4">
+                    <audio controls class="w-full">
+                        <source src="{{ asset('storage/' . $post->postRecord) }}" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                    </audio>
+                </div>
+            @endif
+
+            <!-- Affichage des options de sondage -->
+            <div class="space-y-2">
+                @foreach($post->polls as $poll)
+                    <div 
+                        class="poll-option relative bg-gray-50 rounded-lg p-3 cursor-pointer transition-all hover:bg-blue-50"
+                        data-poll="{{ $poll->id }}"
+                        onclick="vote({{ $post->id }}, {{ $poll->id }})"
+                    >
+                        <div class="absolute top-0 left-0 h-full bg-blue-100 rounded-lg transition-all duration-500" 
+                             style="width: {{ $poll->votes_percentage }}%"></div>
+                        <div class="relative z-10 flex justify-between">
+                            <span>{{ $poll->text }}</span>
+                            <span>{{ $poll->votes_count }} votes</span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endforeach
+</div>
+
+
+<form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    <div class="mb-4">
+        <label for="content" class="block text-gray-700">Contenu (optionnel)</label>
+        <textarea name="content" id="content" class="w-full p-2 border rounded-lg"></textarea>
+    </div>
+
+    <div class="mb-4">
+        <label for="postRecord" class="block text-gray-700">Enregistrement vocal (optionnel)</label>
+        <input type="file" name="postRecord" id="postRecord" accept="audio/mp3, audio/wav" class="w-full p-2 border rounded-lg">
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-gray-700">Options de sondage</label>
+        <div id="polls-container">
+            <div class="poll-option mb-2">
+                <input type="text" name="polls[0][text]" class="w-full p-2 border rounded-lg" placeholder="Option 1" required>
+            </div>
+            <div class="poll-option mb-2">
+                <input type="text" name="polls[1][text]" class="w-full p-2 border rounded-lg" placeholder="Option 2" required>
+            </div>
+        </div>
+        <button type="button" onclick="addPollOption()" class="mt-2 text-blue-500">Ajouter une option</button>
+    </div>
+
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Créer le post</button>
+</form>
+
+<script>
+function addPollOption() {
+    const container = document.getElementById('polls-container');
+    const index = container.children.length;
+    const newOption = document.createElement('div');
+    newOption.classList.add('poll-option', 'mb-2');
+    newOption.innerHTML = `
+        <input type="text" name="polls[${index}][text]" class="w-full p-2 border rounded-lg" placeholder="Option ${index + 1}" required>
+    `;
+    container.appendChild(newOption);
+}
+</script>
